@@ -10,7 +10,7 @@ import UIKit
 
 class ToDoListViewController: UITableViewController {
     
-    var itemArray = ["eintrag1","eintrag2","zeile3","zeile4"]
+    var itemArray = [Item]()
     
     let defaults = UserDefaults.standard
 
@@ -18,7 +18,7 @@ class ToDoListViewController: UITableViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        if let items = defaults.array(forKey: "liste") as? [String] {
+        if let items = defaults.array(forKey: "liste") as? [Item] {
             itemArray = items
         } else {
             itemArray.removeAll()
@@ -34,7 +34,13 @@ class ToDoListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell")
-        cell?.textLabel?.text = itemArray[indexPath.row]
+        cell?.textLabel?.text = itemArray[indexPath.row].titel
+        
+        cell?.accessoryType = itemArray[indexPath.row].erledigt ? .checkmark : .none
+        
+        // das selbe wie das hier:
+        //if itemArray[indexPath.row].erledigt { cell?.accessoryType = .checkmark } else { cell?.accessoryType = .none}
+        
         return cell!
     }
   
@@ -45,12 +51,12 @@ class ToDoListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //print(tableView.cellForRow(at: indexPath)?.textLabel?.text)
         
+        itemArray[indexPath.row].erledigt = !itemArray[indexPath.row].erledigt
+
+        tableView.reloadData()
+        
         tableView.deselectRow(at: indexPath, animated: true)
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        } else {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
+        
     }
     
     //MARK - add button
@@ -64,7 +70,11 @@ class ToDoListViewController: UITableViewController {
         
         let action = UIAlertAction(title: "hinzufügen", style: .default) { (aktion) in
             //print("hinzufügen gedrückt \(textfeld.text)")
-            self.itemArray.append(textfeld.text!)
+            
+            let element = Item()
+            element.titel = textfeld.text!
+            
+            self.itemArray.append(element)
             
             self.defaults.set(self.itemArray, forKey: "liste")
             
