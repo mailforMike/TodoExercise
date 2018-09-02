@@ -11,10 +11,19 @@ import UIKit
 class ToDoListViewController: UITableViewController {
     
     var itemArray = ["eintrag1","eintrag2","zeile3","zeile4"]
+    
+    let defaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        if let items = defaults.array(forKey: "liste") as? [String] {
+            itemArray = items
+        } else {
+            itemArray.removeAll()
+        }
+        
     }
     
     //MARK - Tableview Datasouce
@@ -29,6 +38,7 @@ class ToDoListViewController: UITableViewController {
         return cell!
     }
   
+    
     
     //MARK - Table view delegate methoden (Events)
     
@@ -53,8 +63,11 @@ class ToDoListViewController: UITableViewController {
         let alert = UIAlertController(title: "Neues Listenelement hinzufügen", message: "", preferredStyle: .alert)
         
         let action = UIAlertAction(title: "hinzufügen", style: .default) { (aktion) in
-            print("hinzufügen gedrückt \(textfeld.text)")
+            //print("hinzufügen gedrückt \(textfeld.text)")
             self.itemArray.append(textfeld.text!)
+            
+            self.defaults.set(self.itemArray, forKey: "liste")
+            
             self.tableView.reloadData()
         }
         
