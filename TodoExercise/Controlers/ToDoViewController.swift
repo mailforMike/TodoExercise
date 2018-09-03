@@ -7,15 +7,18 @@
 //
 
 import UIKit
+import CoreData
 
 class ToDoListViewController: UITableViewController {
+    
+    //greift auf objekte der klasse appdelegate zu:
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     var itemArray = [Item]()
     
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
-    // default plist file:
-    //let defaults = UserDefaults.standard
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,12 +27,7 @@ class ToDoListViewController: UITableViewController {
         loadItems()
         
         
-        //   user defaults laden:
-//        if let items = defaults.array(forKey: "liste") as? [Item] {
-//            itemArray = items
-//        } else {
-//            itemArray.removeAll()
-//        }
+
         
     }
     
@@ -44,7 +42,6 @@ class ToDoListViewController: UITableViewController {
         cell?.textLabel?.text = itemArray[indexPath.row].titel
         
         cell?.accessoryType = itemArray[indexPath.row].erledigt ? .checkmark : .none
-        
         // das selbe wie das hier:
         //if itemArray[indexPath.row].erledigt { cell?.accessoryType = .checkmark } else { cell?.accessoryType = .none}
         
@@ -57,6 +54,10 @@ class ToDoListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //print(tableView.cellForRow(at: indexPath)?.textLabel?.text)
+
+        //      core data löschen:
+//        context.delete(itemArray[indexPath.row])
+//        itemArray.remove(at: indexPath.row)
         
         itemArray[indexPath.row].erledigt = !itemArray[indexPath.row].erledigt
 
@@ -78,8 +79,9 @@ class ToDoListViewController: UITableViewController {
         let action = UIAlertAction(title: "hinzufügen", style: .default) { (aktion) in
             //print("hinzufügen gedrückt \(textfeld.text)")
             
-            let element = Item()
+            let element = Item(context: self.context)
             element.titel = textfeld.text!
+            element.erledigt = false
             
             self.itemArray.append(element)
             
@@ -105,24 +107,21 @@ class ToDoListViewController: UITableViewController {
     //MARK - Speichern/laden Routine
     
     func saveItems(){
-        let encoder = PropertyListEncoder()
+        
         do {
-            let data = try  encoder.encode(self.itemArray)
-            try data.write(to: self.dataFilePath!)
+           try context.save()
         } catch {
-            print("Erros encoding daten: \(error)")
+            print("Erros core data write: \(error)")
         }
         self.tableView.reloadData()
     }
     
     func loadItems(){
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            do {
-                itemArray = try decoder.decode([Item].self, from: data)
-            } catch {
-                print("Error decode: \(error)")
-            }
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        do {
+            itemArray = try context.fetch(request)
+        } catch {
+             print("Erros core data read: \(error)")
         }
     }
 }
