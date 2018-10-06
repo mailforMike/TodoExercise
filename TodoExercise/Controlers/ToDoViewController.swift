@@ -14,20 +14,13 @@ class ToDoListViewController: UITableViewController {
     //greift auf objekte der klasse appdelegate zu:
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
-    var itemArray = [Item]()
+    var itemArray = [Item]() // <- Item ist der Tabllen Name aus CoreData
     
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
-    
-    
-
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
       
         loadItems()
-        
-        
-
         
     }
     
