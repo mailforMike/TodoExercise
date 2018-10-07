@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
 class ToDoListViewController: SwipeTableViewController {
     
@@ -44,6 +45,17 @@ class ToDoListViewController: SwipeTableViewController {
         } else {
             cell.textLabel?.text = "keine elemente Vorhanden"
         }
+        
+        let prozent = CGFloat(indexPath.row) / CGFloat((itemArray?.count)!)
+        let hex = selectedCategory?.color
+        var farbe = UIColor(hexString: hex)
+        farbe = farbe?.darken(byPercentage: prozent)
+        cell.backgroundColor = farbe
+        
+       // cell.textLabel?.textColor = ContrastColourOf(farbe, false)
+        
+       
+        
         
         return cell
     }
