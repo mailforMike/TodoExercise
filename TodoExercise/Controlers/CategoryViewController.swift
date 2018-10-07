@@ -10,7 +10,7 @@ import UIKit
 import RealmSwift
 import SwipeCellKit
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
 
     let realm = try! Realm()
     
@@ -19,7 +19,6 @@ class CategoryViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.rowHeight = 80.0
         loadItems()
 
     }
@@ -41,8 +40,7 @@ class CategoryViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell") as! SwipeTableViewCell
-        cell.delegate = self
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         cell.textLabel?.text = categoryArray?[indexPath.row].name ?? "keine Kategorien angelegt"
         
@@ -66,6 +64,18 @@ class CategoryViewController: UITableViewController {
             print("Erros core data write: \(error)")
         }
         self.tableView.reloadData()
+    }
+    
+    override func updatModel(at indexPath: IndexPath) {
+        do {
+            try realm.write {
+                let obj = categoryArray![indexPath.row]
+                realm.delete(obj)
+                
+            }
+        } catch {
+            print("Erros core data write: \(error)")
+        }
     }
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
@@ -94,32 +104,4 @@ class CategoryViewController: UITableViewController {
         
     }
     
-}
-
-//MARK: - Swipe Cell Code
-
-extension CategoryViewController: SwipeTableViewCellDelegate {
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
-        guard orientation == .right else { return nil }
-        
-        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
-            do {
-                try self.realm.write {
-                    let obj = self.categoryArray![indexPath.row]
-                    self.realm.delete(obj)
-                    
-                }
-            } catch {
-                print("Erros core data write: \(error)")
-            }
-            tableView.reloadData()
-        }
-        
-      
-        
-        // customize the action appearance
-        deleteAction.image = UIImage(named: "delete-icon")
-        
-        return [deleteAction]
-    }
 }
