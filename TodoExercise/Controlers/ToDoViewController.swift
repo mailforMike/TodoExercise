@@ -11,6 +11,11 @@ import CoreData
 
 class ToDoListViewController: UITableViewController {
     
+    var selectedCategory : Category?  { //datentyp kommt aus CoreData Modell
+        didSet{
+            loadItems()
+        }
+    }
     //greift auf objekte der klasse appdelegate zu:
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
@@ -20,7 +25,7 @@ class ToDoListViewController: UITableViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
       
-        loadItems()
+        //loadItems()
         
     }
     
@@ -75,6 +80,7 @@ class ToDoListViewController: UITableViewController {
             let element = Item(context: self.context)
             element.titel = textfeld.text!
             element.erledigt = false
+            element.parentCategory = self.selectedCategory
             
             self.itemArray.append(element)
             
@@ -109,7 +115,15 @@ class ToDoListViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-    func loadItems(_ request : NSFetchRequest<Item> = Item.fetchRequest()){
+    func loadItems(_ request : NSFetchRequest<Item> = Item.fetchRequest(),_ preidcate : NSPredicate? = nil){
+        
+        let catPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        
+        if let aditionalPredicate = preidcate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [aditionalPredicate,catPredicate])
+        } else {
+            request.predicate = catPredicate
+        }
         
         do {
             itemArray = try context.fetch(request)
@@ -131,12 +145,12 @@ extension ToDoListViewController: UISearchBarDelegate {
         let request : NSFetchRequest<Item> = Item.fetchRequest()
         
         let preidcate = NSPredicate(format: "titel CONTAINS[cd] %@", searchBar.text!)
-        request.predicate = preidcate
+        //request.predicate = preidcate
         
         let sortierung = NSSortDescriptor(key: "titel", ascending: true)
         request.sortDescriptors = [sortierung]
         
-        loadItems(request)
+        loadItems(request, preidcate)
         
     }
     
