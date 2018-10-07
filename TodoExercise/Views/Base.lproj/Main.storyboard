@@ -12,7 +12,6 @@
         <!--Kategorien-->
         <scene sceneID="6aZ-sW-rjd">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="4r6-UD-zQH" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tableViewController id="jWJ-Dk-qhB" customClass="CategoryViewController" customModule="TodoExercise" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="cEY-Du-buP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -44,6 +43,7 @@
                         <segue destination="Nmb-JE-hQy" kind="show" identifier="goToItems" id="UvM-BZ-6Hk"/>
                     </connections>
                 </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4r6-UD-zQH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="626" y="127"/>
         </scene>
