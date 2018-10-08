@@ -15,6 +15,9 @@ class ToDoListViewController: SwipeTableViewController {
     let realm = try! Realm()
     var itemArray : Results<Item>?
     
+    
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     var selectedCategory : Category?  {
         didSet{
             loadItems()
@@ -23,10 +26,32 @@ class ToDoListViewController: SwipeTableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-      
-        //loadItems()
+        tableView.separatorStyle = .none
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         
+        title = selectedCategory?.name
+        
+        navBarStyle(with: (selectedCategory?.color)!)
+        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        navBarStyle(with: "C8FFEA")
+    }
+    
+    func navBarStyle(with hexcolor:String){
+        
+        let farbe = UIColor(hexString: hexcolor)
+        let contrast = UIColor.init(contrastingBlackOrWhiteColorOn: farbe, isFlat: true)
+        
+        navigationController?.navigationBar.barTintColor = farbe
+        navigationController?.navigationBar.tintColor = contrast
+        
+        navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor: contrast]
+        
+        searchBar.barTintColor = farbe
     }
     
     //MARK: - Tableview Datasouce
@@ -52,7 +77,10 @@ class ToDoListViewController: SwipeTableViewController {
         farbe = farbe?.darken(byPercentage: prozent)
         cell.backgroundColor = farbe
         
-       // cell.textLabel?.textColor = ContrastColourOf(farbe, false)
+        //let ttt = UIColor.init(complementaryFlatColorOf: farbe)
+        let ttt = UIColor.init(contrastingBlackOrWhiteColorOn: farbe, isFlat: true)
+        
+        cell.textLabel?.textColor = ttt
         
        
         
